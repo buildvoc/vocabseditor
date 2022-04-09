@@ -41,13 +41,13 @@ class UploadFileForm(forms.Form):
 
 def custom_name_errors(field_name):
     name_errors = {'required': '{} is required when language provided'.format(field_name)}
-    name_errors['invalid']: 'Enter a valid value'
+    name_errors['invalid'] = 'Enter a valid value'
     return name_errors
 
 
 def custom_lang_errors(field_name):
     lang_errors = {'required': 'Language is required when {} provided'.format(field_name.lower())}
-    lang_errors['invalid']: 'Enter a valid value'
+    lang_errors['invalid'] = 'Enter a valid value'
     return lang_errors
 
 
@@ -560,6 +560,7 @@ ConceptSourceFormSet = inlineformset_factory(
 #
 ######################################################################
 
+
 class AutocompleteCharField(forms.CharField):
     widget = autocomplete.TagSelect2(
         url='vocabs-ac:external-link-ac',
@@ -636,6 +637,11 @@ class SkosConceptForm(forms.ModelForm):
         help_text=SkosConcept._meta.get_field('needs_review').help_text
     )
 
+    is_trained = forms.BooleanField(
+        widget=forms.CheckboxInput, required=False,
+        help_text=SkosConcept._meta.get_field('is_trained').help_text
+    )
+
     class Meta:
         model = SkosConcept
         exclude = ['created_by', ]
@@ -680,6 +686,7 @@ class SkosConceptForm(forms.ModelForm):
                          ),
                 Fieldset('Quality check',
                          Field('needs_review'),
+                         Field('is_trained'),
                          ),
                 HTML("<br>"),
                 ButtonHolder(Submit('submit', 'save')),

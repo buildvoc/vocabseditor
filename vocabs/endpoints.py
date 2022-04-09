@@ -8,6 +8,31 @@ search_types = (
     ('PrefixSearch?', 'Prefix Search')
 )
 
+class BuildvocAC(object):
+    """
+    Buildvoc
+    """
+    endpoint = 'http://178.62.100.153:81/rest/v1/search?'
+
+    def payload(self, q):
+        """
+        returns a dictionary containing arguments to be
+        passed in the URL’s query string
+        """
+        return {'query': q, 'lang': 'en'}
+    
+    def get_url(self):
+        """
+        service's URL
+        """
+        return self.endpoint
+
+    def parse_response(self, response):
+        """
+        parses JSON response to return a list containing
+        data in format 'uri - label'
+        """
+        return [str(x['uri'])  + ' - ' + str(x['prefLabel']) for x in response['results']]
 
 class DbpediaAC(object):
     """
@@ -96,13 +121,14 @@ class FishAC(object):
 
 
 ENDPOINT = {
+    'Buildvoc': BuildvocAC(),
     'Dbpedia': DbpediaAC(),
     'GND': GndAC(),
     'GEMET': GemetAC(),
     'FISH Event Types Thesaurus': FishAC(),
     'FISH Archaeological Sciences Thesaurus': FishAC(),
     'FISH Thesaurus of Monument Types': FishAC(),
-    'FISH Archaeological Objects Thesaurus': FishAC()
+    'FISH Archaeological Objects Thesaurus': FishAC(),
 }
 
 ENDPOINT_CHOICES = [(key, key) for key, value in ENDPOINT.items()]

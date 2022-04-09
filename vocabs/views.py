@@ -1,5 +1,7 @@
+from django.core import serializers
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import DeleteView
+from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
 from django_tables2 import RequestConfig
@@ -10,9 +12,10 @@ from .filters import SkosConceptListFilter, SkosConceptSchemeListFilter, SkosCol
 from browsing.browsing_utils import GenericListView, BaseCreateView, BaseUpdateView
 from .rdf_utils import *
 from django.shortcuts import render
-from django.http import HttpResponse
-import time
+from django.http import HttpResponse, JsonResponse
 import datetime
+import json
+import time
 from guardian.shortcuts import get_objects_for_user
 from django.contrib.auth.decorators import login_required, permission_required
 from reversion.models import Version
@@ -604,3 +607,31 @@ def file_upload(request):
     else:
         form = UploadFileForm()
     return render(request, 'vocabs/upload.html', {'form': form})
+
+def get_skosconcepts_from_labels(request):
+    labels = json.loads(request.GET.get('concept_labels', "[]"))
+    concepts_query = SkosConcept.objects.filter(pref_label__in=labels).values('pref_label', 'related', 'has_notes__name')
+    if len(labels) != len(concepts_query):
+        return JsonResponse({
+            'error': 'One or more concepts have more than one concept note.'
+        })
+    concepts_to_return = list(map(lambda concept: {
+        'subjects': [
+            {
+                'label': concept['pref_label'],
+                'uri': concept['related'],
+            }
+        ],
+        'text': concept['has_notes__name'],
+    }, concepts_query))
+
+    return JsonResponse(concepts_to_return, safe=False)
+
+@csrf_exempt
+def mark_skosconcepts_as_trained(request):
+    if request.method == 'POST':
+        labels = json.loads(request.body.decode())
+        concepts_query = SkosConcept.objects.filter(pref_label__in=labels)
+        concepts_query.update(is_trained=True)
+        return HttpResponse(status=204)
+    return HttpResponse(status=405)

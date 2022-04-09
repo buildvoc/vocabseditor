@@ -19,11 +19,13 @@
             {% for concept,structure in object.has_concepts.all|tree_info %}
             {% if structure.new_level %}<ul><li>{% else %}</li><li>{% endif %}
             <a href="{{ concept.get_absolute_url }}">
-            {% if concept.needs_review == True %}
-            {{ concept.pref_label }} <b style="color:red;" title="Needs review"> !</b>
-            {% else %}
-            {{ concept.pref_label }}
-            {% endif %}
+                {{ concept.pref_label }}
+                {% if concept.needs_review == True %}
+                    <b style="color:red;" title="Needs review"> !</b>
+                {% endif %}
+                {% if concept.is_trained == True %}
+                    {% include 'vocabs/tick.html' %}
+                {% endif %}
             </a>
             {% for level in structure.closed_levels %}</li></ul>{% endfor %}
             {% endfor %}

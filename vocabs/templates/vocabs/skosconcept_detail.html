@@ -25,22 +25,26 @@
             {% for concept,structure in object.scheme.has_concepts.all|tree_info %}
             {% if structure.new_level %}<ul><li>{% else %}</li><li>{% endif %}
 
-            {% if concept.id == object.id and concept.needs_review == False %}
-            <strong>{{ concept.pref_label }}</strong>
-            {% elif concept.id == object.id and concept.needs_review == True %}
-            <strong>
-            {{ concept.pref_label }} <b style="color:red;" title="Needs review"> !</b>
+            {% if concept.id == object.id %}
+            <strong>{{ concept.pref_label }}
+                {% if concept.needs_review == True %}
+                    <b style="color:red;" title="Needs review"> !</b>
+                {% endif %}
+                {% if concept.is_trained == True %}
+                    {% include 'vocabs/tick.html' %}
+                {% endif %}
             </strong>
-            {% elif concept.id == object.id %}
-            <strong>{{ concept.pref_label }}</strong>
-            {% elif concept.id != object.id and concept.needs_review == True %}
+            {% elif concept.id != object.id %}
             <a href="{{ concept.get_absolute_url }}">
-            {{ concept.pref_label }} <b style="color:red;" title="Needs review"> !</b>
+                {{ concept.pref_label }}
+                {% if concept.needs_review == True %}
+                    <b style="color:red;" title="Needs review"> !</b>
+                {% endif %}
+                {% if concept.is_trained == True %}
+                    {% include 'vocabs/tick.html' %}
+                {% endif %}
             </a>
-            {% else %}
-            <a href="{{ concept.get_absolute_url }}">{{ concept.pref_label }}</a>
             {% endif %}
-
             {% for level in structure.closed_levels %}</li></ul>{% endfor %}
             {% endfor %}
 

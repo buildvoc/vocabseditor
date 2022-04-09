@@ -1,0 +1,81 @@
+{% extends 'admin/change_list.html' %}
+{% load static %}
+{% block extrahead %}
+    <script defer src="{% static 'vocabs/admin_concept_list.js' %}">
+    </script>
+{% endblock %}
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        .bar{
+            position: fixed;
+            top: 0;
+            width: 100vw;
+            height: 4px;
+            z-index: 10;
+        }
+        .loading-bar{
+            background-color: #f5dd5d;
+            width: 0;
+            height: 100%;
+            transition: width 0.3s ease-in-out;
+        }
+        #annif-learn-form{
+            margin-top: 1rem;
+            float: left;
+            width: 60%;
+        }
+        #annif-learn-form input{
+            margin: 0.5rem 0 1rem 0;
+            width: 100%;
+        }
+        .error-modal{
+            background-color: #f8d7da;
+            border-color: #f5c2c7;
+            color: #842029;
+            margin-top: 1rem;
+            border-radius: 0.25rem;
+            padding: 0.6rem 0.6rem;
+            font-size: 1rem;
+            display: none;
+        }
+        .show{
+            display: block !important;
+        }
+        #annif-response-body {
+            width: 100%;
+            height: 105px;
+            resize: none;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    {{ block.super }}
+    <form id="annif-learn-form">
+        <label for="annif-url">Annif address: </label>
+        <br />
+        <input id="annif-url" name="annif-url" type="text" required="true" >
+        <br />
+        <label for="project-id">Project id: </label>
+        <br />
+        <input id="project-id" name="project-id" type="text" required="true" >
+        <br />
+        <label for="annif-response-body">Response Body: </label>
+        <br />
+        <br />
+        <textarea id="annif-response-body" name="annif-response-body" type="text" disabled readonly>
+        </textarea>
+        <br />
+        <br />
+        <label for="annif-response-status">Response Code: </label>
+        <br />
+        <input id="annif-response-status" name="annif-response-status" type="text" disabled >
+        <br />
+        <label for="annif-response-headers">Response Headers: </label>
+        <br />
+        <input id="annif-response-headers" name="annif-response-headers" type="text" disabled >
+        <br />
+        <div class="error-modal">
+        </div>
+    </form>
+{% endblock %}
